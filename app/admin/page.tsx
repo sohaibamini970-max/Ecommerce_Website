@@ -24,7 +24,7 @@ export default function AdminDashboard() {
 
     const codPending = orders.filter(
         (o) => o.payment?.method === "cod" && (o.payment?.status ?? "pending") !== "paid"
-    );
+    ).length;
 
     const deliveredOrders = orders.filter(
         (o) => o.status === "delivered"
