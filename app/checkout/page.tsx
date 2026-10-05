@@ -43,7 +43,11 @@ export default function CheckoutPage() {
             tax,
             total,
             customer: data.customer,
-            payment: data.payment,
+            payment: {
+                method: data.payment.method,
+                last4: data.payment.last4,
+                status: data.payment.method === "cod" ? "pending" : "paid",   // 👈 ADD THIS
+            },
             trackingNumber: `LX${Math.floor(Math.random() * 900000000) + 100000000}`,
             estimatedDelivery: new Date(
                 Date.now() + 5 * 24 * 60 * 60 * 1000

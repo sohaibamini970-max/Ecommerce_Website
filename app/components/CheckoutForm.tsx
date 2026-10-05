@@ -5,7 +5,11 @@ import type { Order } from "@/lib/store/orders";
 
 export interface CheckoutData {
     customer: Order["customer"];
-    payment: Order["payment"];
+    payment: {
+        method: "card" | "paypal" | "cod";
+        last4?: string;
+        status: "pending" | "paid";   // 👈 ADD THIS
+    };
 }
 
 interface Props {
@@ -97,6 +101,7 @@ export default function CheckoutForm({ onSubmit, placing = false }: Props) {
                     form.paymentMethod === "card"
                         ? form.cardNumber.replace(/\s/g, "").slice(-4)
                         : undefined,
+                status: form.paymentMethod === "cod" ? "pending" : "paid",  // 👈 ADD THIS
             },
         });
     };

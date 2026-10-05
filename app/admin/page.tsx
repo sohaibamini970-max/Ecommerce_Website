@@ -15,7 +15,7 @@ export default function AdminDashboard() {
     const collections = useCollectionsAdmin((s) => s.collections);
 
     // ---- KPIs ----
-    const paidOrders = orders.filter((o) => o.payment?.status === "paid");
+    const paidOrders = orders.filter((o) => (o.payment?.status ?? "pending") === "paid");
     const totalRevenue = paidOrders.reduce((sum, o) => sum + o.total, 0);
 
     const pendingOrders = orders.filter(
@@ -23,8 +23,8 @@ export default function AdminDashboard() {
     ).length;
 
     const codPending = orders.filter(
-        (o) => o.payment?.method === "cod" && o.payment?.status !== "paid"
-    ).length;
+        (o) => o.payment?.method === "cod" && (o.payment?.status ?? "pending") !== "paid"
+    );
 
     const deliveredOrders = orders.filter(
         (o) => o.status === "delivered"

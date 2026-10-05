@@ -10,6 +10,8 @@ export type OrderStatus =
     | "delivered"
     | "cancelled";
 
+export type PaymentStatus = "pending" | "paid" | "refunded" | "failed";
+
 export interface OrderItem {
     productId: string;
     name: string;
@@ -41,6 +43,7 @@ export interface Order {
     payment: {
         method: "card" | "paypal" | "cod";
         last4?: string;
+        status: PaymentStatus;   // 👈 NEW
     };
     trackingNumber?: string;
     estimatedDelivery?: string; // ISO
@@ -50,6 +53,7 @@ interface OrdersStore {
     orders: Order[];
     addOrder: (order: Omit<Order, "id" | "createdAt">) => Order;
     updateStatus: (id: string, status: OrderStatus) => void;
+    updatePaymentStatus: (id: string, status: PaymentStatus) => void;  // 👈 NEW
     getOrder: (id: string) => Order | undefined;
     clearOrders: () => void;
 }
@@ -77,6 +81,15 @@ export const useOrders = create<OrdersStore>()(
                     ),
                 }),
 
+            updatePaymentStatus: (id, status) =>
+                set({
+                    orders: get().orders.map((o) =>
+                        o.id === id
+                            ? { ...o, payment: { ...o.payment, status } }
+                            : o
+                    ),
+                }),
+
             getOrder: (id) => get().orders.find((o) => o.id === id),
 
             clearOrders: () => set({ orders: [] }),
@@ -85,7 +98,7 @@ export const useOrders = create<OrdersStore>()(
     )
 );
 
-/** Helper: human-readable label for a status */
+/** Human-readable labels for each status */
 export const statusLabels: Record<OrderStatus, string> = {
     pending: "Pending",
     confirmed: "Confirmed",
@@ -96,7 +109,7 @@ export const statusLabels: Record<OrderStatus, string> = {
     cancelled: "Cancelled",
 };
 
-/** Helper: order of statuses for the progress stepper */
+/** Ordered list of statuses for the progress stepper */
 export const statusFlow: OrderStatus[] = [
     "confirmed",
     "processing",
