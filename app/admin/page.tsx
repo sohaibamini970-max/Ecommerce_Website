@@ -235,12 +235,13 @@ export default function AdminDashboard() {
             </div>
 
             {/* Quick actions */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 {[
                     { label: "Add Product", href: "/admin/products/new", icon: "📦" },
                     { label: "New Category", href: "/admin/categories", icon: "🏷️" },
                     { label: "Collections", href: "/admin/collections", icon: "📚" },
                     { label: "Orders", href: "/admin/orders", icon: "📋" },
+                    { label: "Users", href: "/admin/users", icon: "👥" },  
                 ].map((action) => (
                     <Link
                         key={action.href}

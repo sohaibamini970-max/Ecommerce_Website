@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { useUsers } from "@/lib/store/users";
 
 export type Role = "customer" | "admin";
 
@@ -54,7 +55,17 @@ export const useAuth = create<AuthStore>()(
             role: "admin",
           };
           set({ user, isAuthenticated: true, isAdmin: true });
-          return user; // 👈 MUST return
+
+          // 👇 Add admin to users directory (idempotent)
+          useUsers.getState().addUser({
+            id: user.id,
+            fullName: user.fullName,
+            email: user.email,
+            role: user.role,
+          });
+          useUsers.getState().markLogin(user.id);
+
+          return user;
         }
 
         // 👤 CUSTOMER LOGIN
@@ -73,7 +84,17 @@ export const useAuth = create<AuthStore>()(
           role: "customer",
         };
         set({ user, isAuthenticated: true, isAdmin: false });
-        return user; // 👈 MUST return
+
+        // 👇 Add to users directory + mark login
+        useUsers.getState().addUser({
+          id: user.id,
+          fullName: user.fullName,
+          email: user.email,
+          role: user.role,
+        });
+        useUsers.getState().markLogin(user.id);
+
+        return user;
       },
 
       register: async (fullName, email, password) => {
@@ -93,6 +114,16 @@ export const useAuth = create<AuthStore>()(
           role: "customer",
         };
         set({ user, isAuthenticated: true, isAdmin: false });
+
+        // 👇 Add to users directory + mark login
+        useUsers.getState().addUser({
+          id: user.id,
+          fullName: user.fullName,
+          email: user.email,
+          role: user.role,
+        });
+        useUsers.getState().markLogin(user.id);
+
         return user;
       },
 
